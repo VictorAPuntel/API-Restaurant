@@ -4,9 +4,8 @@ import { TablesSessionsController } from "@/controllers/tablesSessionsController
 const tablesSessionsRoutes = Router();
 const tableSessionsController = new TablesSessionsController();
 
+tablesSessionsRoutes.get("/", tableSessionsController.index);
 tablesSessionsRoutes.post("/", tableSessionsController.create);
-// tablesRoutes.post("/", tableController.create);
-// tablesRoutes.put("/:id", tableController.update);
-// tablesRoutes.delete("/:id", tableController.remove);
+tablesSessionsRoutes.patch("/:id", tableSessionsController.update);
 
 export { tablesSessionsRoutes };
