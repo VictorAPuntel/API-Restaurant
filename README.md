@@ -69,51 +69,166 @@ A API estará disponível em: **`http://localhost:3333`**
 
 ---
 
-## 📌 Endpoints Principais
+## 📌 Endpoints e Exemplos
 
-### **Produtos**
-- `GET /products` — Lista todos os produtos
-- `POST /products` — Cria um novo produto
-- `GET /products/:id` — Busca produto por ID
-- `PUT /products/:id` — Atualiza produto
-- `DELETE /products/:id` — Remove produto
+### **1. Produtos**
+#### Criar Produto
+**POST** `/products`
+```json
+{
+  "name": "Pizza Margherita",
+  "price": 35.90
+}
+```
+**Resposta (201)**:
+```json
+{
+  "id": 1,
+  "name": "Pizza Margherita",
+  "price": 35.9,
+  "created_at": "2025-08-10T22:00:00.000Z"
+}
+```
 
-### **Mesas**
-- `GET /tables` — Lista mesas
-- `POST /tables` — Cria nova mesa
-
-### **Sessões de Mesa**
-- `POST /tables-sessions` — Inicia uma sessão
-- `PATCH /tables-sessions/:id/close` — Fecha a sessão
-
-### **Pedidos**
-- `GET /orders` — Lista pedidos
-- `POST /orders` — Cria pedido
-- `PATCH /orders/:id/status` — Atualiza status
+#### Listar Produtos
+**GET** `/products`
+```json
+[
+  {
+    "id": 1,
+    "name": "Pizza Margherita",
+    "price": 35.9
+  },
+  {
+    "id": 2,
+    "name": "Lasanha",
+    "price": 42.5
+  }
+]
+```
 
 ---
 
-## 🧪 Exemplos com cURL
-
-```bash
-# Criar produto
-curl -X POST http://localhost:3333/products   -H "Content-Type: application/json"   -d '{"name": "Pizza Margherita", "price": 35.90}'
+### **2. Mesas**
+#### Criar Mesa
+**POST** `/tables`
+```json
+{
+  "number": 10
+}
+```
+**Resposta (201)**:
+```json
+{
+  "id": 1,
+  "number": 10
+}
 ```
 
-```bash
-# Listar mesas
-curl http://localhost:3333/tables
+#### Listar Mesas
+**GET** `/tables`
+```json
+[
+  { "id": 1, "number": 10 },
+  { "id": 2, "number": 11 }
+]
 ```
+
+---
+
+### **3. Sessões de Mesa**
+#### Iniciar Sessão
+**POST** `/tables-sessions`
+```json
+{
+  "table_id": 1,
+  "opened_by": "João"
+}
+```
+**Resposta (201)**:
+```json
+{
+  "id": 1,
+  "table_id": 1,
+  "opened_by": "João",
+  "opened_at": "2025-08-10T22:10:00.000Z"
+}
+```
+
+#### Fechar Sessão
+**PATCH** `/tables-sessions/1/close`
+**Resposta (200)**:
+```json
+{
+  "message": "Sessão encerrada com sucesso"
+}
+```
+
+---
+
+### **4. Pedidos**
+#### Criar Pedido
+**POST** `/orders`
+```json
+{
+  "session_id": 1,
+  "product_id": 2,
+  "quantity": 3
+}
+```
+**Resposta (201)**:
+```json
+{
+  "id": 1,
+  "session_id": 1,
+  "product_id": 2,
+  "quantity": 3,
+  "status": "pending"
+}
+```
+
+#### Atualizar Status do Pedido
+**PATCH** `/orders/1/status`
+```json
+{
+  "status": "completed"
+}
+```
+**Resposta (200)**:
+```json
+{
+  "message": "Status do pedido atualizado para 'completed'"
+}
+```
+
+---
+
+## 🔄 Fluxo de Uso da API
+
+1. Criar **mesa** → `POST /tables`
+2. Abrir **sessão da mesa** → `POST /tables-sessions`
+3. Criar **produtos** → `POST /products`
+4. Registrar **pedidos** → `POST /orders`
+5. Atualizar status dos pedidos → `PATCH /orders/:id/status`
+6. Fechar sessão → `PATCH /tables-sessions/:id/close`
 
 ---
 
 ## 🛡️ Tratamento de Erros
 
-A API utiliza um middleware (`errorHandling.ts`) para retornar erros no formato JSON:
+A API retorna erros no formato JSON:
 ```json
 {
   "status": "error",
-  "message": "Mensagem de erro"
+  "message": "Mensagem descritiva do erro"
+}
+```
+
+Exemplo — produto não encontrado:
+```json
+{
+  "status": "error",
+  "message": "Produto não encontrado"
 }
 ```
 
